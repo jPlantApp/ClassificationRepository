@@ -2,7 +2,7 @@
 
 ## Data set
 
-Collection includes 100 types of flowers, each with 100-150 images:
+Collection includes 100 types of flowers, each with 50-150 images:
 
 ```
 Flowers
