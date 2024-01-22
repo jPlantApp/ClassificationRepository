@@ -23,13 +23,11 @@ Flowers
     │   └── Yellow Iris
 ```
 
-Link to the flowers data-set:
-https://drive.google.com/drive/folders/1IYYBzouWq5ihwDdnFsfVxdHUT1LeRlQp?usp=sharing
+Link to the flowers data-set: https://shorturl.at/B1349
 
 ## Model 
 
-Link to the trained model:
-https://drive.google.com/drive/folders/1mkGkePhTtz3w5_7bVTRoApiATyjWf3qY?usp=sharing
+Link to the trained model: https://shorturl.at/gmSWX
 
 ### Convolution network structure: 
 
@@ -79,6 +77,3 @@ def improved_vgg16(num_classes, d, e, m):
 - Loss: **0.349** [**034.9%**]
 - Validation accuracy: **0.906** [**90.6%**]
 - Validation loss: **0.374** [**37.4%**]
-
-## Data set
-https://drive.google.com/drive/folders/1IYYBzouWq5ihwDdnFsfVxdHUT1LeRlQp?usp=sharing
