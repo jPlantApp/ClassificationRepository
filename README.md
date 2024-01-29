@@ -23,7 +23,7 @@ Flowers
     │   └── Yellow Iris
 ```
 
-Link to the flowers data-set: https://shorturl.at/B1349
+Link to the flowers data-set: https://shorturl.at/jtzH4
 
 ## Model 
 
