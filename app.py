@@ -4,8 +4,17 @@ import base64
 import Functions.func as ff
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+import configparser
 
-engine = create_engine('postgresql://plantapp:haslo@localhost/plantapp_db')
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+uname = config.get('database', 'uname')
+passwd = config.get('database', 'passwd')
+host = config.get('database', 'host')
+dbname = config.get('database', 'dbname')
+
+engine = create_engine(f'postgresql://{uname}:{passwd}@{host}/{dbname}')
 
 app = Flask(__name__)
 CORS(app)

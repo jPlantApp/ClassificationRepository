@@ -16,6 +16,21 @@ from tensorflow.keras.layers import Dense, Flatten, Dropout
 from tensorflow.keras.optimizers import Adam
 from keras.callbacks import CSVLogger
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
+import configparser
+
+config = configparser.ConfigParser()
+config.read('train.ini')
+
+b_size = int(config.get('configuration', 'batch_size'))
+d_dir = config.get('configuration', 'data_dir') 
+n_classes = int(config.get('configuration', 'num_classes'))
+tst_size = float(config.get('configuration', 'test_size'))
+r_state = int(config.get('configuration', 'random_state'))
+dropout = float(config.get('configuration', 'dropout'))
+epsilon = float(config.get('configuration', 'epsilon'))
+momentum = float(config.get('configuration', 'momentum'))
+l_rate = float(config.get('configuration', 'learning_rate'))
+epch = int(config.get('configuration', 'epochs'))
 
 
 
@@ -40,7 +55,7 @@ def improved_vgg16(num_classes, d, e, m):
     model.add(Dense(256, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
-    optimizer = Adam(learning_rate=0.0005)
+    optimizer = Adam(learning_rate=l_rate)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
     model.summary()
@@ -63,11 +78,11 @@ class ImageJitter(object):
         return x
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
-batch_size = 128
+batch_size = b_size
 target_size = (250, 250)
-data_dir = 'flowers'
+data_dir = d_dir
 data = []
-num_classes = 5 
+num_classes = n_classes 
 
 for class_name in os.listdir(data_dir):
     class_dir = os.path.join(data_dir, class_name)
@@ -76,10 +91,13 @@ for class_name in os.listdir(data_dir):
             img_path = os.path.join(class_dir, img_name)
             data.append((img_path, class_name))
             
-train_data, test_data = train_test_split(data, test_size=0.10, random_state=42)
+train_data, test_data = train_test_split(data, test_size=tst_size, random_state=r_state)
 
 train_df = pd.DataFrame(train_data, columns=['filename', 'label'])
 test_df = pd.DataFrame(test_data, columns=['filename', 'label'])
+
+print(train_df)
+print(test_df)
 
 train_boosted_datagen = ImageDataGenerator(
     rescale=1.0 / 255,
@@ -114,11 +132,11 @@ test_generator = test_datagen.flow_from_dataframe(
     class_mode='categorical'
 )
 
-model = improved_vgg16(num_classes, 0.8, 0.99, 0.1e-5)
+model = improved_vgg16(num_classes, dropout, epsilon, momentum)
 
 csv_logger = CSVLogger("history_other_500.csv")
 
 model_checkpoint_loss = ModelCheckpoint('model_best_loss.h5', monitor='val_loss', save_best_only=True, verbose=1)
 model_checkpoint_acc = ModelCheckpoint('model_best_acc.h5', monitor='val_accuracy', save_best_only=True, verbose=1)
 
-model.fit(train_boosted_generator, epochs=100, validation_data=test_generator, callbacks=[model_checkpoint_loss, model_checkpoint_acc, csv_logger])
+model.fit(train_boosted_generator, epochs=epch, validation_data=test_generator, callbacks=[model_checkpoint_loss, model_checkpoint_acc, csv_logger])

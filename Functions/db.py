@@ -1,7 +1,16 @@
 from sqlalchemy import create_engine, Column, Integer, String, Sequence, Float, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
+import configparser
 
-engine = create_engine('postgresql://plantapp:haslo@localhost/plantapp_db')
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+uname = config.get('database', 'uname')
+passwd = config.get('database', 'passwd')
+host = config.get('database', 'host')
+dbname = config.get('database', 'dbname')
+
+engine = create_engine(f'postgresql://{uname}:{passwd}@{host}/{dbname}')
 Base = declarative_base()
 
 class Flower(Base):

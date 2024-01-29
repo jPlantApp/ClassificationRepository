@@ -10,15 +10,28 @@ from PIL import Image
 from io import BytesIO
 from keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array
-
+import configparser
 from Functions.db import Flower
 from Functions.db import User
 from Functions.db import UsersFlowers
 
-engine = create_engine('postgresql://plantapp:haslo@localhost/plantapp_db')
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+uname = config.get('database', 'uname')
+passwd = config.get('database', 'passwd')
+host = config.get('database', 'host')
+dbname = config.get('database', 'dbname')
+web_client_id = config.get('google', 'web_client_id')
+path_to_model = config.get('model', 'model_path')
+dir_with_flowers = config.get('model', 'dir_with_flowers')
+
+
+engine = create_engine(f'postgresql://{uname}:{passwd}@{host}/{dbname}')
+
+
 Base = declarative_base()
 Base.metadata.create_all(engine)
-web_client_id = "763380336470-i3e20snu26rdng6kkkidhslrt1gdo96c.apps.googleusercontent.com"
 
 
 def get_users_flowers_by_token_id(session: Session, user_token: str, email: str):
@@ -78,13 +91,12 @@ def get_classification(session: Session, image_base64: str, image_url: str, user
     if account_status:
         test_datagen = ImageDataGenerator(rescale=1.0/255)
         test_generator = test_datagen.flow_from_directory(
-            'Flowers',
+            dir_with_flowers,
             target_size=(250, 250),
-            batch_size=32,
             class_mode='categorical'
         )
 
-        model_path = 'Model/model.h5'
+        model_path = path_to_model
         model = load_model(model_path)
 
 
